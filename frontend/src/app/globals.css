@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@theme {
+  --color-rainbowkit: #7B3FE4;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
