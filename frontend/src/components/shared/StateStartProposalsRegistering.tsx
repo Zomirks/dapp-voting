@@ -1,0 +1,101 @@
+'use client';
+
+import { useEffect } from "react";
+
+// ShadCN components Import
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// Wagmi Hooks to interact with the blockchain
+import { type BaseError, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/utils/constants";
+
+const StateStartProposalsRegistering = () => {
+    const { data: hash, error: writeError, writeContract, isPending: writeIsPending } = useWriteContract()
+
+    const { data: workflowStatus, error: readError, isPending: readIsPending, refetch } = useReadContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: 'workflowStatus',
+    });
+    const workflowStatusIndex = workflowStatus as number;
+
+    const workflowStatusNames = [
+        "Registering Voters",
+        "Proposals Registration Started",
+        "Proposals Registration Ended",
+        "Voting Session Started",
+        "Voting Session Ended",
+        "Votes Tallied"
+    ];
+
+    const handleStartProposalsRegistering = async () => {
+        writeContract({
+            address: CONTRACT_ADDRESS,
+            abi: CONTRACT_ABI,
+            functionName: 'startProposalsRegistering',
+            args: [],
+        })
+    }
+
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+        useWaitForTransactionReceipt({
+            hash,
+        })
+
+    if (readIsPending)
+        return <div className="p-6 text-center">Loading the current WorkflowStatus...</div>
+    if (readError)
+        return (
+            <div className="p-6">
+                <Alert variant="destructive">
+                    <AlertDescription>
+                        Unable to read from smart contract. Make sure you are connected to the correct network or the the contract is deployed.
+                    </AlertDescription>
+                </Alert>
+            </div>
+        )
+
+    return (
+        <>
+            <p>Current Status: <span>{workflowStatusNames[workflowStatusIndex]}</span></p>
+            
+            {/* Alert : Waiting for blockchain confirmation */}
+            {isConfirming && (
+                <Alert className="mb-4">
+                    <AlertDescription>
+                        Waiting for blockchain confirmation... This may take a few seconds.
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            {/* Alert : Transaction confirmed */}
+            {isConfirmed && (
+                <Alert className="mb-4 border-green-600 bg-green-500/10">
+                    <AlertDescription className="text-foreground">
+                        ✅ Transaction confirmed! The workflowStatus is now &quot;startProposalsRegistering&quot;.
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            {/* Alert : Blockchain Error */}
+            {writeError && (
+                <Alert variant="destructive" className="mb-4">
+                    <AlertDescription>
+                        <div className="font-semibold mb-1">Transaction failed</div>
+                        <div className="text-sm">{(writeError as BaseError).shortMessage || writeError.message}</div>
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            <Button
+                onClick={handleStartProposalsRegistering}
+                className="w-full"
+                disabled={writeIsPending || isConfirming}
+            >
+                Start Proposals Registration
+            </Button>
+        </>
+    )
+}
+export default StateStartProposalsRegistering

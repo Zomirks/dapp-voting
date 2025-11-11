@@ -23,6 +23,8 @@ interface VoterAddress {
     voterAddress: string;
 }
 
+import StateStartProposalsRegistering from "./StateStartProposalsRegistering";
+
 const Voting = () => {
     const [inputWhitelistAddress, setInputWhitelistAddress] = useState('');
     const [validationError, setValidationError] = useState(''); 
@@ -140,6 +142,8 @@ const Voting = () => {
             </div>
             
             <EventsVoterRegistered events={eventsVoterAddress} />
+
+            <StateStartProposalsRegistering />
         </div>
     )
 }
