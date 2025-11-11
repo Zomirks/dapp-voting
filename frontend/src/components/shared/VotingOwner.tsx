@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import AlertWaiting from '@/components/shared/alert/AlertWaiting';
+
 // Wagmi Hooks to interact with the blockchain
 import { type BaseError, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 
@@ -103,11 +105,7 @@ const VotingOwner = () => {
 
                         {/* Alert : Waiting for blockchain confirmation */}
                         {isConfirming && (
-                            <Alert className="mb-4">
-                                <AlertDescription>
-                                    Waiting for blockchain confirmation... This may take a few seconds.
-                                </AlertDescription>
-                            </Alert>
+                            <AlertWaiting />
                         )}
 
                         {/* Alert : Transaction confirmed */}
