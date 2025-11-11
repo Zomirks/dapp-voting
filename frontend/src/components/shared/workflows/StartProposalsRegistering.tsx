@@ -12,7 +12,7 @@ import AlertWaiting from "@/components/shared/alert/AlertWaiting";
 import { type BaseError, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/utils/constants";
 
-const StateStartProposalsRegistering = () => {
+const StartProposalsRegistering = () => {
     const { data: hash, error: writeError, writeContract, isPending: writeIsPending } = useWriteContract()
 
     const { data: workflowStatus, error: readError, isPending: readIsPending, refetch } = useReadContract({
@@ -76,7 +76,7 @@ const StateStartProposalsRegistering = () => {
                 </Alert>
             )}
 
-            {/* Alert : Blockchain Error */}
+            {/* Alert : Blockchain Error */} 
             {writeError && (
                 <Alert variant="destructive" className="mb-4">
                     <AlertDescription>
@@ -96,4 +96,4 @@ const StateStartProposalsRegistering = () => {
         </>
     )
 }
-export default StateStartProposalsRegistering
+export default StartProposalsRegistering

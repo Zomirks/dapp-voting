@@ -26,7 +26,7 @@ interface VoterAddress {
     voterAddress: string;
 }
 
-import StateStartProposalsRegistering from "./StateStartProposalsRegistering";
+import StateStartProposalsRegistering from "@/components/shared/workflows/StartProposalsRegistering";
 
 const VotingOwner = () => {
     const [inputWhitelistAddress, setInputWhitelistAddress] = useState('');
