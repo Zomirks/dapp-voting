@@ -2,25 +2,49 @@
 
 import { useEffect, useState } from "react";
 
-// Imports des composants UI de shadcn
+// ShadCN components Import
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-// Hooks Wagmi pour interagir avec la blockchain
+// Wagmi Hooks to interact with the blockchain
 import { type BaseError, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 
-// Constantes du smart contract (adresse et ABI)
+// Viem to read blockchain events
+import { publicClient } from "@/lib/client";
+import { parseAbiItem } from "viem";
+
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/utils/constants";
+
+import EventsVoterRegistered from "./EventsVoterRegistered";
+interface VoterAddress {
+    voterAddress: string;
+}
 
 const Voting = () => {
     const [inputWhitelistAddress, setInputWhitelistAddress] = useState('');
     const [validationError, setValidationError] = useState(''); 
 
-    // Hook Wagmi pour écrire dans le smart contract (envoyer une transaction)
+    const [eventsVoterAddress, setEventsVoterAddress] = useState<VoterAddress[]>([]);
+
     const { data: hash, error: writeError, writeContract, isPending: writeIsPending } = useWriteContract()
+
+    const getVoterAddressEvents = async () => {
+        const votersChangedEvents = await publicClient.getLogs({
+            address: CONTRACT_ADDRESS,
+            event: parseAbiItem('event VoterRegistered(address voterAddress)'),
+            fromBlock: BigInt(0),
+            toBlock: 'latest'
+        });
+
+        setEventsVoterAddress(votersChangedEvents.map((event) => {
+            return {
+                voterAddress: event.args.voterAddress as string,
+            }
+        }))
+    }
 
     const handleAddWhitelist = async () => {
         setValidationError('');
@@ -47,8 +71,13 @@ const Voting = () => {
     useEffect(() => {
         if (isConfirmed) {
             setInputWhitelistAddress('');
+            getVoterAddressEvents();
         }
-    }, [isConfirmed])
+    }, [isConfirmed]);
+
+    useEffect(() => {
+        getVoterAddressEvents();
+    }, [])
 
     return (
         <div>
@@ -68,10 +97,21 @@ const Voting = () => {
                 {isConfirmed && (
                     <Alert className="mb-4 border-green-600 bg-green-500/10">
                         <AlertDescription className="text-foreground">
-                            ✅ Transaction confirmed! {inputWhitelistAddress} Has been added to the Whitelist.
+                            ✅ Transaction confirmed! Address has been added to the Whitelist.
                         </AlertDescription>
                     </Alert>
                 )}
+
+                {/* Alert : Blockchain Error */}
+                {writeError && (
+                    <Alert variant="destructive" className="mb-4">
+                        <AlertDescription>
+                            <div className="font-semibold mb-1">Transaction failed</div>
+                            <div className="text-sm">{(writeError as BaseError).shortMessage || writeError.message}</div>
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 <div className="space-y-2">
                     <Label htmlFor="whitelist-input" className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}>
                         Add to the Whitelist
@@ -93,10 +133,13 @@ const Voting = () => {
                 <Button
                     onClick={handleAddWhitelist}
                     className="w-full"
+                    disabled={writeIsPending || isConfirming}
                 >
                     Submit
                 </Button>
             </div>
+            
+            <EventsVoterRegistered events={eventsVoterAddress} />
         </div>
     )
 }
