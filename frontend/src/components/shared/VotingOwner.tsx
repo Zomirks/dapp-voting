@@ -27,7 +27,10 @@ interface VoterAddress {
 }
 
 import StartProposalsRegistering from "@/components/shared/workflows/StartProposalsRegistering";
+import EndProposalsRegistering from "@/components/shared/workflows/EndProposalsRegistering";
 import CurrentWorkflow from './workflows/CurrentWorkflow';
+import StartVotingSession from './workflows/StartVotingSession';
+import EndVotingSession from './workflows/EndVotingSession';
 
 const VotingOwner = () => {
     const [inputWhitelistAddress, setInputWhitelistAddress] = useState('');
@@ -157,8 +160,16 @@ const VotingOwner = () => {
 
                     <EventsVoterRegistered events={eventsVoterAddress} />
 
-                    <CurrentWorkflow />
-                        <StartProposalsRegistering />
+                    <div className="p-6 border border-border rounded-lg bg-card mt-6">
+                        <p className="text-base font-semibold mb-2">Workflow Status Changes</p>
+                        <CurrentWorkflow />
+                        <div className="flex w-full flex-wrap gap-4">
+                            <StartProposalsRegistering />
+                            <EndProposalsRegistering />
+                            <StartVotingSession />
+                            <EndVotingSession />
+                        </div>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="user">

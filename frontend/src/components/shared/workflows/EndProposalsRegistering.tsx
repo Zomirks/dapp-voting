@@ -8,14 +8,14 @@ import AlertWaiting from "@/components/shared/alert/AlertWaiting";
 import { type BaseError, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/utils/constants";
 
-const StartProposalsRegistering = () => {
+const EndProposalsRegistering = () => {
     const { data: hash, error: writeError, writeContract, isPending: writeIsPending } = useWriteContract()
 
-    const handleStartProposalsRegistering = async () => {
+    const handleEndProposalsRegistering = async () => {
         writeContract({
             address: CONTRACT_ADDRESS,
             abi: CONTRACT_ABI,
-            functionName: 'startProposalsRegistering',
+            functionName: 'endProposalsRegistering',
             args: [],
         })
     }
@@ -36,7 +36,7 @@ const StartProposalsRegistering = () => {
             {isConfirmed && (
                 <Alert className="mb-4 border-green-600 bg-green-500/10">
                     <AlertDescription className="text-foreground">
-                        ✅ Transaction confirmed! The workflowStatus is now &quot;startProposalsRegistering&quot;.
+                        ✅ Transaction confirmed! The workflowStatus is now &quot;EndProposalsRegistering&quot;.
                     </AlertDescription>
                 </Alert>
             )}
@@ -52,13 +52,13 @@ const StartProposalsRegistering = () => {
             )}
 
             <Button
-                onClick={handleStartProposalsRegistering}
+                onClick={handleEndProposalsRegistering}
                 className="flex-1"
                 disabled={writeIsPending || isConfirming}
             >
-                Start Proposals Registration
+                End Proposals Registration
             </Button>
         </>
     )
 }
-export default StartProposalsRegistering
+export default EndProposalsRegistering
