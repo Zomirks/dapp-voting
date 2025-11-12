@@ -26,7 +26,8 @@ interface VoterAddress {
     voterAddress: string;
 }
 
-import StateStartProposalsRegistering from "@/components/shared/workflows/StartProposalsRegistering";
+import StartProposalsRegistering from "@/components/shared/workflows/StartProposalsRegistering";
+import CurrentWorkflow from './workflows/CurrentWorkflow';
 
 const VotingOwner = () => {
     const [inputWhitelistAddress, setInputWhitelistAddress] = useState('');
@@ -156,7 +157,8 @@ const VotingOwner = () => {
 
                     <EventsVoterRegistered events={eventsVoterAddress} />
 
-                    <StateStartProposalsRegistering />
+                    <CurrentWorkflow />
+                        <StartProposalsRegistering />
                 </TabsContent>
 
                 <TabsContent value="user">
