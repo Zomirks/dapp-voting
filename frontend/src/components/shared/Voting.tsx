@@ -84,14 +84,7 @@ const Voting = () => {
                 <CardContent className="space-y-4">
                     {/* Alert : Waiting for blockchain confirmation */}
                     {isConfirming && (
-                        <Alert className="border-blue-600 bg-blue-500/10">
-                            <div className="flex items-center gap-3">
-                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
-                                <AlertDescription className="text-foreground">
-                                    Loading...
-                                </AlertDescription>
-                            </div>
-                        </Alert>
+                        <AlertWaiting />
                     )}
 
                     {/* Alert : Transaction confirmed */}
