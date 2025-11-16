@@ -72,32 +72,52 @@ const SetVote = () => {
                     </Alert>
                 )}
 
-                <div className="space-y-2">
-                    <Label htmlFor="vote-input" className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}>
-                        Vote for a proposal
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                    
+                        <Label htmlFor="vote-input" className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}>
+                            Vote for a proposal
+                        </Label>
                         {validationError && (
-                            <Badge variant="destructive">Error</Badge>
+                            <Badge variant="destructive" className="text-xs">
+                                Error
+                            </Badge>
                         )}
-                    </Label>
+                    </div>
                     <Input
                         id="vote-input"
                         type="number"
                         value={inputVoteProposal}
                         min={1}
-                        placeholder="Select the proposalId you want to vote for"
+                        placeholder="Select the Proposal ID you want to vote for"
                         onChange={(e) => setInputVoteProposal(e.target.value)}
                     />
                     {validationError && (
-                        <p className="text-destructive text-sm mb-2">{validationError}</p>
+                        <p className="text-destructive text-xs flex items-center gap-1">
+                            <svg
+                                className="h-3 w-3"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                            </svg>
+                            {validationError}
+                        </p>
                     )}
+                    <Button
+                        onClick={handleSetVote}
+                        className="w-full"
+                        disabled={writeIsPending || isConfirming || isConfirmed}
+                    >
+                        Submit
+                    </Button>
                 </div>
-                <Button
-                    onClick={handleSetVote}
-                    className="w-full"
-                    disabled={writeIsPending || isConfirming || isConfirmed}
-                >
-                    Submit
-                </Button>
             </div>
         </div>
     )
