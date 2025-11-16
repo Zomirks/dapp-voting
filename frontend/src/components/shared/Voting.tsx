@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
 
 // Wagmi Hooks to interact with the blockchain
 import { type BaseError, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
@@ -48,71 +50,157 @@ const Voting = () => {
 
     useEffect(() => {
         if (isConfirmed) {
-            
+            setInputProposal('');
         }
     }, [isConfirmed]);
 
     return (
-        <>
-            <div className="p-6 border border-border rounded-lg bg-card">
+        <div className="grid gap-6 lg:grid-cols-3">
+            <Card className="lg:col-span-1">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-2xl">New Proposal</CardTitle>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                            <svg
+                                className="h-5 w-5 text-primary"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 4v16m8-8H4"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                    <CardDescription>
+                        Send your proposal
+                    </CardDescription>
+                </CardHeader>
 
-                {/* Alert : Waiting for blockchain confirmation */}
-                {isConfirming && (
-                    <AlertWaiting />
-                )}
-
-                {/* Alert : Transaction confirmed */}
-                {isConfirmed && (
-                    <Alert className="mb-4 border-green-600 bg-green-500/10">
-                        <AlertDescription className="text-foreground">
-                            ✅ Transaction confirmed! Your proposal has been added.
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                {/* Alert : Blockchain Error */}
-                {writeError && (
-                    <Alert variant="destructive" className="mb-4">
-                        <AlertDescription>
-                            <div className="font-semibold mb-1">Transaction failed</div>
-                            <div className="text-sm">{(writeError as BaseError).shortMessage || writeError.message}</div>
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                <div className="space-y-2">
-                    <Label htmlFor="proposal-input" className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}>
-                        Add a Proposal
-                        {validationError && (
-                            <Badge variant="destructive">Error</Badge>
-                        )}
-                    </Label>
-
-                    <Input
-                        id="proposal-input"
-                        type="text"
-                        value={inputProposal}
-                        placeholder="Enter your Proposal"
-                        onChange={(e) => setInputProposal(e.target.value)}
-                    />
-                    {validationError && (
-                        <p className="text-destructive text-sm mb-2">{validationError}</p>
+                <CardContent className="space-y-4">
+                    {/* Alert : Waiting for blockchain confirmation */}
+                    {isConfirming && (
+                        <Alert className="border-blue-600 bg-blue-500/10">
+                            <div className="flex items-center gap-3">
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                                <AlertDescription className="text-foreground">
+                                    Loading...
+                                </AlertDescription>
+                            </div>
+                        </Alert>
                     )}
 
-                    <Button
-                        onClick={handleAddProposal}
-                        className=" w-full"
-                        disabled={writeIsPending || isConfirming}
-                    >
-                        Submit
-                    </Button>
+                    {/* Alert : Transaction confirmed */}
+                    {isConfirmed && (
+                        <Alert className="border-green-600 bg-green-500/10">
+                            <div className="flex items-center gap-3">
+                                <svg
+                                    className="h-5 w-5 text-green-600"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 13l4 4L19 7"
+                                    />
+                                </svg>
+                                <AlertDescription className="text-foreground">
+                                    Proposal added!
+                                </AlertDescription>
+                            </div>
+                        </Alert>
+                    )}
 
-                    <GetProposals />
-                </div>
+                    {/* Alert : Blockchain Error */}
+                    {writeError && (
+                        <Alert variant="destructive">
+                            <AlertDescription>
+                                <div className="font-semibold mb-1">Transaction Error</div>
+                                <div className="text-sm">{(writeError as BaseError).shortMessage || writeError.message}</div>
+                            </AlertDescription>
+                        </Alert>
+                    )}
+
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <Label
+                                htmlFor="proposal-input"
+                                className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}
+                            >
+                                Proposal description
+                            </Label>
+                            {validationError && (
+                                <Badge variant="destructive" className="text-xs">
+                                    Error
+                                </Badge>
+                            )}
+                        </div>
+
+                        <Input
+                            id="proposal-input"
+                            type="text"
+                            value={inputProposal}
+                            placeholder="Describe your proposal..."
+                            onChange={(e) => setInputProposal(e.target.value)}
+                            className={validationError ? "border-destructive" : ""}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !writeIsPending && !isConfirming) {
+                                    handleAddProposal();
+                                }
+                            }}
+                        />
+
+                        {validationError && (
+                            <p className="text-destructive text-xs flex items-center gap-1">
+                                <svg
+                                    className="h-3 w-3"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                                {validationError}
+                            </p>
+                        )}
+
+                        <Button
+                            onClick={handleAddProposal}
+                            className="w-full"
+                            disabled={writeIsPending || isConfirming}
+                        >
+                            {writeIsPending || isConfirming ? (
+                                <>
+                                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent"></div>
+                                    Loading...
+                                </>
+                            ) : (
+                                <>
+                                    Submit
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="lg:col-span-2 space-y-6">
+                <GetProposals />
+                <SetVote />
             </div>
-
-            <SetVote />
-        </>
+        </div>
     )
 }
 export default Voting
