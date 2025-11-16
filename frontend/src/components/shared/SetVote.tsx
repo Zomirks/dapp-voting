@@ -1,6 +1,6 @@
 'use client';
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { type BaseError, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 
 // ShadCN components Import
 import { Label } from "@/components/ui/label";
@@ -9,53 +9,45 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-// Wagmi Hooks to interact with the blockchain
-import { type BaseError, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+// Custom components Import
+import AlertWaiting from "@/components/shared/alert/AlertWaiting";
 
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/utils/constants";
 
-import AlertWaiting from "@/components/shared/alert/AlertWaiting";
-import GetProposals from "@/components/shared/GetProposals";
-import SetVote from "@/components/shared/SetVote";
+const SetVote = () => {
+    const [inputVoteProposal, setInputVoteProposal] = useState('');
+    const [validationError, setValidationError] = useState('');
 
-const Voting = () => {
     const { data: hash, error: writeError, writeContract, isPending: writeIsPending } = useWriteContract()
 
-    const [validationError, setValidationError] = useState('');
-    const [inputProposal, setInputProposal] = useState('');
+    const [inputVote, setInputVote] = useState('');
 
     const { isLoading: isConfirming, isSuccess: isConfirmed } =
         useWaitForTransactionReceipt({
             hash,
         })
 
-    const handleAddProposal = async () => {
+    const handleSetVote = async () => {
         setValidationError('');
 
-        // Validation : Check if Proposal isn't empty
-        if (!inputProposal || inputProposal.trim() === '') {
-            setValidationError('Please enter a Proposal');
+        // Validation : Check if vote isn't empty
+        if (!inputVoteProposal || inputVoteProposal.trim() === '' || Number(inputVoteProposal) == 0) {
+            setValidationError('Please choose a valid proposal');
             return;
         }
 
         writeContract({
             address: CONTRACT_ADDRESS,
             abi: CONTRACT_ABI,
-            functionName: 'addProposal',
-            args: [inputProposal],
+            functionName: 'setVote',
+            args: [inputVoteProposal],
         })
     }
 
-    useEffect(() => {
-        if (isConfirmed) {
-            
-        }
-    }, [isConfirmed]);
-
     return (
-        <>
+        <div>
             <div className="p-6 border border-border rounded-lg bg-card">
-
+            
                 {/* Alert : Waiting for blockchain confirmation */}
                 {isConfirming && (
                     <AlertWaiting />
@@ -65,7 +57,7 @@ const Voting = () => {
                 {isConfirmed && (
                     <Alert className="mb-4 border-green-600 bg-green-500/10">
                         <AlertDescription className="text-foreground">
-                            ✅ Transaction confirmed! Your proposal has been added.
+                            ✅ Transaction confirmed! You have voted.
                         </AlertDescription>
                     </Alert>
                 )}
@@ -81,38 +73,33 @@ const Voting = () => {
                 )}
 
                 <div className="space-y-2">
-                    <Label htmlFor="proposal-input" className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}>
-                        Add a Proposal
+                    <Label htmlFor="vote-input" className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}>
+                        Vote for a proposal
                         {validationError && (
                             <Badge variant="destructive">Error</Badge>
                         )}
                     </Label>
-
                     <Input
-                        id="proposal-input"
-                        type="text"
-                        value={inputProposal}
-                        placeholder="Enter your Proposal"
-                        onChange={(e) => setInputProposal(e.target.value)}
+                        id="vote-input"
+                        type="number"
+                        value={inputVoteProposal}
+                        min={1}
+                        placeholder="Select the proposalId you want to vote for"
+                        onChange={(e) => setInputVoteProposal(e.target.value)}
                     />
                     {validationError && (
                         <p className="text-destructive text-sm mb-2">{validationError}</p>
                     )}
-
-                    <Button
-                        onClick={handleAddProposal}
-                        className=" w-full"
-                        disabled={writeIsPending || isConfirming}
-                    >
-                        Submit
-                    </Button>
-
-                    <GetProposals />
                 </div>
+                <Button
+                    onClick={handleSetVote}
+                    className="w-full"
+                    disabled={writeIsPending || isConfirming || isConfirmed}
+                >
+                    Submit
+                </Button>
             </div>
-
-            <SetVote />
-        </>
+        </div>
     )
 }
-export default Voting
+export default SetVote
