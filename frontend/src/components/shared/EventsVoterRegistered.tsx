@@ -11,7 +11,7 @@ const EventsVoterRegistered = ({ events }: { events: VoterAddress[] }) => {
 
   return (
     <div className="mt-6">
-      <h3 className="text-lg font-semibold mb-3">Transaction History</h3>
+      <h3 className="text-lg font-semibold mb-3">Whitelist History</h3>
       {events.length === 0 ? (
         <p className="text-muted-foreground text-sm">
           No transactions yet. Submit an address to see your transaction history.

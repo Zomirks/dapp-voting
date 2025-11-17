@@ -90,24 +90,22 @@ const Voting = () => {
                     {/* Alert : Transaction confirmed */}
                     {isConfirmed && (
                         <Alert className="border-green-600 bg-green-500/10">
-                            <div className="flex items-center gap-3">
-                                <svg
-                                    className="h-5 w-5 text-green-600"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M5 13l4 4L19 7"
-                                    />
-                                </svg>
-                                <AlertDescription className="text-foreground">
-                                    Proposal added!
-                                </AlertDescription>
-                            </div>
+                            <svg
+                                className="h-5 w-5 text-green-600"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 13l4 4L19 7"
+                                />
+                            </svg>
+                            <AlertDescription className="text-foreground">
+                                Proposal added!
+                            </AlertDescription>
                         </Alert>
                     )}
 
