@@ -32,6 +32,7 @@ import EndProposalsRegistering from "@/components/shared/workflows/EndProposalsR
 import CurrentWorkflow from '@/components/shared/workflows/CurrentWorkflow';
 import StartVotingSession from '@/components/shared/workflows/StartVotingSession';
 import EndVotingSession from '@/components/shared/workflows/EndVotingSession';
+import TallyVotes from '@/components/shared/workflows/TallyVotes';
 
 const VotingOwner = () => {
     const [inputWhitelistAddress, setInputWhitelistAddress] = useState('');
@@ -111,7 +112,7 @@ const VotingOwner = () => {
                         </svg>
                         Admin
                     </TabsTrigger>
-                    
+
                     <TabsTrigger
                         value="user"
                         className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
@@ -144,68 +145,69 @@ const VotingOwner = () => {
 
                         <CardContent className="space-y-4">
                             {/* Alerts */}
-                        {isConfirming && (
-                            <AlertWaiting />
-                        )}
+                            {isConfirming && (
+                                <AlertWaiting />
+                            )}
 
-                        {isConfirmed && (
+                            {isConfirmed && (
                                 <Alert className="border-green-600 bg-green-500/10 [&>*]:col-span-full">
                                     <div className="flex items-center gap-3">
                                         <svg className="h-5 w-5 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
-                                <AlertDescription className="text-foreground">
+                                        <AlertDescription className="text-foreground">
                                             Address added to the whitelist !
-                                </AlertDescription>
+                                        </AlertDescription>
                                     </div>
-                            </Alert>
-                        )}
+                                </Alert>
+                            )}
 
-                        {writeError && (
+                            {writeError && (
                                 <Alert variant="destructive">
-                                <AlertDescription>
+                                    <AlertDescription>
                                         <div className="font-semibold mb-1">Transaction Error</div>
-                                    <div className="text-sm">{(writeError as BaseError).shortMessage || writeError.message}</div>
-                                </AlertDescription>
-                            </Alert>
-                        )}
+                                        <div className="text-sm">{(writeError as BaseError).shortMessage || writeError.message}</div>
+                                    </AlertDescription>
+                                </Alert>
+                            )}
 
                             {/* Form */}
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="whitelist-input" className="text-sm font-medium">
-                                        Ethereum Address
-                                    </Label>
-                                {validationError && (
+                                    <Label
+                                        htmlFor="whitelist-input"
+                                        className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}
+                                    >Ethereum Address</Label>
+                                    {validationError && (
                                         <Badge variant="destructive" className="text-xs">
                                             Error
                                         </Badge>
-                                )}
+                                    )}
                                 </div>
 
-                            <Input
-                                id="whitelist-input"
-                                type="text"
-                                value={inputWhitelistAddress}
+                                <Input
+                                    id="whitelist-input"
+                                    type="text"
+                                    value={inputWhitelistAddress}
                                     placeholder="0x..."
-                                onChange={(e) => setInputWhitelistAddress(e.target.value)}
+                                    onChange={(e) => setInputWhitelistAddress(e.target.value)}
                                     className={validationError ? "border-destructive" : ""}
-                            />
+                                />
 
-                            {validationError && (
+                                {validationError && (
                                     <p className="text-destructive text-xs flex items-center gap-1">
                                         <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                         {validationError}
                                     </p>
-                            )}
+                                )}
 
-                        <Button
-                            onClick={handleAddWhitelist}
-                            className="w-full"
-                            disabled={writeIsPending || isConfirming}
-                        >
+                                <Button
+                                    onClick={handleAddWhitelist}
+                                    className="w-full"
+                                    disabled={writeIsPending || isConfirming}
+                                >
                                     {writeIsPending || isConfirming ? (
                                         <>
                                             <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent"></div>
@@ -219,8 +221,8 @@ const VotingOwner = () => {
                                             Add to the whitelist
                                         </>
                                     )}
-                        </Button>
-                    </div>
+                                </Button>
+                            </div>
                         </CardContent>
                     </Card>
 
@@ -243,7 +245,8 @@ const VotingOwner = () => {
                                 <EndProposalsRegistering refetch={refetch} />
                                 <StartVotingSession refetch={refetch} />
                                 <EndVotingSession refetch={refetch} />
-                        </div>
+                                <TallyVotes refetch={refetch} />
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
