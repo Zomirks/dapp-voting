@@ -4,6 +4,7 @@ import "./globals.css";
 
 import RainbowKitAndWagmiProvider from "@/providers/RainbowKitAndWagmiProvider";
 import Layout from "@/components/shared/Layout";
+import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         <RainbowKitAndWagmiProvider>
           <Layout>
             {children}
+            <Toaster />
           </Layout>
         </RainbowKitAndWagmiProvider>
       </body>
