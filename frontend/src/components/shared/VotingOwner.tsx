@@ -56,6 +56,13 @@ const VotingOwner = () => {
         }))
     }
 
+    const { data: workflowStatus, error: readError, isPending: readIsPending, refetch } = useReadContract({
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: 'workflowStatus',
+    });
+    const workflowStatusIndex: number = workflowStatus as number;
+
     const handleAddWhitelist = async () => {
         setValidationError('');
 
@@ -82,11 +89,13 @@ const VotingOwner = () => {
         if (isConfirmed) {
             setInputWhitelistAddress('');
             getVoterAddressEvents();
+            refetch();
         }
     }, [isConfirmed]);
 
     useEffect(() => {
         getVoterAddressEvents();
+        refetch();
     }, [])
 
     return (
@@ -218,16 +227,25 @@ const VotingOwner = () => {
                     {/* Liste des voteurs enregistrés */}
                     <EventsVoterRegistered events={eventsVoterAddress} />
 
-                    <div className="p-6 border border-border rounded-lg bg-card mt-6">
-                        <p className="text-base font-semibold mb-2">Workflow Status Changes</p>
-                        <CurrentWorkflow />
-                        <div className="flex w-full flex-wrap gap-4">
-                            <StartProposalsRegistering />
-                            <EndProposalsRegistering />
-                            <StartVotingSession />
-                            <EndVotingSession />
+                    {/* Section Workflow */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Workflow Management</CardTitle>
+                            <CardDescription>
+                                Control the different stages of the voting process
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <CurrentWorkflow workflowStatusIndex={workflowStatusIndex} isPending={readIsPending} />
+
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                <StartProposalsRegistering refetch={refetch} />
+                                <EndProposalsRegistering refetch={refetch} />
+                                <StartVotingSession refetch={refetch} />
+                                <EndVotingSession refetch={refetch} />
                         </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 </TabsContent>
 
                 <TabsContent value="user" className="mt-6">

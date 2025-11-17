@@ -1,3 +1,6 @@
+'use client';
+import { useEffect } from "react";
+
 // ShadCN components Import
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -8,7 +11,7 @@ import AlertWaiting from "@/components/shared/alert/AlertWaiting";
 import { type BaseError, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/utils/constants";
 
-const StartVotingSession = () => {
+const StartVotingSession = ({ refetch }: { refetch: () => void }) => {
     const { data: hash, error: writeError, writeContract, isPending: writeIsPending } = useWriteContract()
 
     const handleStartVotingSession = async () => {
@@ -24,6 +27,12 @@ const StartVotingSession = () => {
         useWaitForTransactionReceipt({
             hash,
         })
+
+    useEffect(() => {
+        if (isConfirmed) {
+            refetch();
+        }
+    }, [isConfirmed]);  
 
     return (
         <>
