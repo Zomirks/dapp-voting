@@ -7,25 +7,26 @@ import { useAccount, useReadContract } from 'wagmi';
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/utils/constants';
 
 export default function Home() {
-  const { address, isConnected } = useAccount();
+	const { address, isConnected } = useAccount();
 
-  const { data, isError, isLoading } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
-    functionName: 'owner',
-  });
-  const ownerAddress = data as string;
+	const { data, isError, isLoading } = useReadContract({
+		address: CONTRACT_ADDRESS,
+		abi: CONTRACT_ABI,
+		functionName: 'owner',
+	});
+	const ownerAddress = data as string;
+	const isOwner = ownerAddress && address && ownerAddress === address;
 
-  return (
-    <>
-      {!isConnected ? (
-        <NotConnected />
-      ) : ownerAddress && address && ownerAddress === address ? (
-        <VotingOwner />
-      ) : (
-        <Voting />
-      )
-      }
-    </>
-  );
+	return (
+		<>
+			{!isConnected ? (
+				<NotConnected />
+			) : isOwner ? (
+				<VotingOwner />
+			) : (
+				<Voting />
+			)
+			}
+		</>
+	);
 }
