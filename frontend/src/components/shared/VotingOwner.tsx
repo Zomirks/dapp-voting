@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 
 import AlertWaiting from '@/components/shared/alert/AlertWaiting';
 
@@ -28,9 +29,9 @@ interface VoterAddress {
 
 import StartProposalsRegistering from "@/components/shared/workflows/StartProposalsRegistering";
 import EndProposalsRegistering from "@/components/shared/workflows/EndProposalsRegistering";
-import CurrentWorkflow from './workflows/CurrentWorkflow';
-import StartVotingSession from './workflows/StartVotingSession';
-import EndVotingSession from './workflows/EndVotingSession';
+import CurrentWorkflow from '@/components/shared/workflows/CurrentWorkflow';
+import StartVotingSession from '@/components/shared/workflows/StartVotingSession';
+import EndVotingSession from '@/components/shared/workflows/EndVotingSession';
 
 const VotingOwner = () => {
     const [inputWhitelistAddress, setInputWhitelistAddress] = useState('');
@@ -89,75 +90,132 @@ const VotingOwner = () => {
     }, [])
 
     return (
-        <div>
+        <div className="space-y-6">
             <Tabs defaultValue="admin" className="w-full">
-                <TabsList className="gap-1 self-center">
+                <TabsList className="grid w-full grid-cols-2 gap-2 bg-muted/50 p-1">
                     <TabsTrigger
                         value="admin"
-                        className="data-[state=active]:bg-rainbowkit data-[state=active]:text-white data-[state=active]:font-semibold px-4"
-                    >Admin</TabsTrigger>
+                        className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+                    >
+                        <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        Admin
+                    </TabsTrigger>
                     
                     <TabsTrigger
                         value="user"
-                        className="data-[state=active]:bg-rainbowkit data-[state=active]:text-white data-[state=active]:font-semibold px-4"
-                    >User</TabsTrigger>
+                        className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+                    >
+                        <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        User
+                    </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="admin">
-                    {/* Section 1 : Admin-only : Add an address to the whitelist */}
-                    <div className="p-6 border border-border rounded-lg bg-card">
+                <TabsContent value="admin" className="space-y-6 mt-6">
+                    {/* Section Whitelist */}
+                    <Card>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-2xl">Whitelist</CardTitle>
+                                    <CardDescription className="mt-1">
+                                        Add the addresses of the users who will be able to vote
+                                    </CardDescription>
+                                </div>
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                                    <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </CardHeader>
 
-                        {/* Alert : Waiting for blockchain confirmation */}
+                        <CardContent className="space-y-4">
+                            {/* Alerts */}
                         {isConfirming && (
                             <AlertWaiting />
                         )}
 
-                        {/* Alert : Transaction confirmed */}
                         {isConfirmed && (
-                            <Alert className="mb-4 border-green-600 bg-green-500/10">
+                                <Alert className="border-green-600 bg-green-500/10 [&>*]:col-span-full">
+                                    <div className="flex items-center gap-3">
+                                        <svg className="h-5 w-5 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
                                 <AlertDescription className="text-foreground">
-                                    ✅ Transaction confirmed! Address has been added to the Whitelist.
+                                            Address added to the whitelist !
                                 </AlertDescription>
+                                    </div>
                             </Alert>
                         )}
 
-                        {/* Alert : Blockchain Error */}
                         {writeError && (
-                            <Alert variant="destructive" className="mb-4">
+                                <Alert variant="destructive">
                                 <AlertDescription>
-                                    <div className="font-semibold mb-1">Transaction failed</div>
+                                        <div className="font-semibold mb-1">Transaction Error</div>
                                     <div className="text-sm">{(writeError as BaseError).shortMessage || writeError.message}</div>
                                 </AlertDescription>
                             </Alert>
                         )}
 
-                        <div className="space-y-2">
-                            <Label htmlFor="whitelist-input" className={"text-base font-semibold text-" + (validationError ? "destructive" : "rainbowkit")}>
-                                Add to the Whitelist
+                            {/* Form */}
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="whitelist-input" className="text-sm font-medium">
+                                        Ethereum Address
+                                    </Label>
                                 {validationError && (
-                                    <Badge variant="destructive">Error</Badge>
+                                        <Badge variant="destructive" className="text-xs">
+                                            Error
+                                        </Badge>
                                 )}
-                            </Label>
+                                </div>
+
                             <Input
                                 id="whitelist-input"
                                 type="text"
                                 value={inputWhitelistAddress}
-                                placeholder="Enter an EVM address : 0x..."
+                                    placeholder="0x..."
                                 onChange={(e) => setInputWhitelistAddress(e.target.value)}
+                                    className={validationError ? "border-destructive" : ""}
                             />
+
                             {validationError && (
-                                <p className="text-destructive text-sm mb-2">{validationError}</p>
+                                    <p className="text-destructive text-xs flex items-center gap-1">
+                                        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        {validationError}
+                                    </p>
                             )}
-                        </div>
+
                         <Button
                             onClick={handleAddWhitelist}
                             className="w-full"
                             disabled={writeIsPending || isConfirming}
                         >
-                            Submit
+                                    {writeIsPending || isConfirming ? (
+                                        <>
+                                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent"></div>
+                                            Loading...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            Add to the whitelist
+                                        </>
+                                    )}
                         </Button>
                     </div>
+                        </CardContent>
+                    </Card>
 
+                    {/* Liste des voteurs enregistrés */}
                     <EventsVoterRegistered events={eventsVoterAddress} />
 
                     <div className="p-6 border border-border rounded-lg bg-card mt-6">
@@ -172,7 +230,7 @@ const VotingOwner = () => {
                     </div>
                 </TabsContent>
 
-                <TabsContent value="user">
+                <TabsContent value="user" className="mt-6">
                     <Voting />
                 </TabsContent>
             </Tabs>
